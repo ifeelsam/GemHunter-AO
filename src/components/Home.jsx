@@ -7,13 +7,27 @@ import {
 import { ConnectButton, useConnection } from "@arweave-wallet-kit/react";
 import { useToast } from "../hooks/use-toast";
 import { ToastAction } from "./ui/toast";
-import { useEffect, useState } from "react";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "./ui/drawer";
+import { Button } from "./ui/button";
+import { useEffect, useState, useRef } from "react";
 import { FiLoader } from "react-icons/fi";
 import { IoDiamondOutline } from "react-icons/io5";
 import Footer from "./Footer";
 import gemhunterLogo from "../assets/gemhunter-logo.svg";
 import logoTileCover from "../assets/tile_cover.svg";
 import { GiFireBomb } from "react-icons/gi";
+import { IoRocketSharp } from "react-icons/io5";
+import { GiRollingBomb } from "react-icons/gi";
+import { PiThumbsUpFill } from "react-icons/pi";
 
 export default function Home() {
   const [playerEnterGameDetails, setPlayerEnterGameDetails] = useState({
@@ -21,12 +35,16 @@ export default function Home() {
     betAmount: 1,
   });
   const [loading1, setLoading1] = useState(false);
-  const [tileLoading, setTileLoading] = useState({load:false,indexOfTile:null});
+  const [tileLoading, setTileLoading] = useState({
+    load: false,
+    indexOfTile: null,
+  });
   const [startGameButtonDisable, setStartGameButtonDisable] = useState(false);
   const [currentProcessID, setCurrentProcessID] = useState("");
   const [fetchingPlayerAndTileData, setFetchingPlayerAndTileData] = useState({
     moneyIncrease: 1.2,
-    playerStats: "Safe",
+    playerStats: "End",
+    record: 2,
     playerbalance: 2,
     tile: [
       { value: "Diamond", open: false },
@@ -57,6 +75,7 @@ export default function Home() {
     ],
   });
   const [hasGameStarted, setHasGameStarted] = useState(false);
+  const fileInputRef = useRef(null);
 
   const stripAnsiCodes = (str) =>
     str.replace(
@@ -71,7 +90,7 @@ export default function Home() {
 
   async function openTile(num) {
     try {
-      setTileLoading({load:true,indexOfTile:num-1});
+      setTileLoading({ load: true, indexOfTile: num - 1 });
       const messageId = await message({
         process: currentProcessID,
         signer: createDataItemSigner(window.arweaveWallet),
@@ -120,15 +139,15 @@ export default function Home() {
       const data = stripAnsiCodes(res1.Output.data.output);
       const data2 = JSON.parse(data);
       setFetchingPlayerAndTileData(data2);
-      console.log("Tiles: ", data);
-      if(data2.playerStats=="Doom") {
-        setTileLoading({load:true,indexOfTile:null});
-      }else{
-        setTileLoading({load:false,indexOfTile:null});
+      // console.log("Tiles: ", data);
+      if (data2.playerStats == "Doom") {
+        setTileLoading({ load: true, indexOfTile: null });
+        handleButtonClick();
+      } else {
+        setTileLoading({ load: false, indexOfTile: null });
       }
-      
     } catch (error) {
-       setTileLoading({load:false,indexOfTile:null});
+      setTileLoading({ load: false, indexOfTile: null });
       console.log(error);
       toast({
         variant: "destructive",
@@ -139,8 +158,7 @@ export default function Home() {
     }
   }
 
-
-  async function endGame(){
+  async function endGame() {
     try {
       const messageId = await message({
         process: currentProcessID,
@@ -175,13 +193,19 @@ export default function Home() {
       const data = stripAnsiCodes(res1.Output.data.output);
       const data2 = JSON.parse(data);
       setFetchingPlayerAndTileData(data2);
-      console.log("Tiles: ", data);
-      if(data2.playerStats=="End") setTileLoading({load:true,indexOfTile:null});
-      
+      // console.log("Tiles: ", data);
+      if (data2.playerStats == "End") {
+        setTileLoading({ load: true, indexOfTile: null });
+        handleButtonClick();
+      }
     } catch (error) {
       console.log(error);
     }
   }
+
+  const handleButtonClick = () => {
+    fileInputRef.current.click();
+  };
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -304,7 +328,7 @@ export default function Home() {
       const data = stripAnsiCodes(res1.Output.data.output);
       const data2 = JSON.parse(data);
       setFetchingPlayerAndTileData(data2);
-      console.log("Tiles: ", data);
+      // console.log("Tiles: ", data);
       setLoading1(false);
       setStartGameButtonDisable(true);
       setHasGameStarted(true);
@@ -325,27 +349,24 @@ export default function Home() {
 
   return (
     <div className="h-screen w-full bg-[#121212] relative text-[#FFFFFF]">
-      {hasGameStarted? 
-      
-      <div className="flex items-center justify-between border-b border-gray-600/50 px-10 py-2">
-     
+      {hasGameStarted ? (
+        <div className="flex items-center justify-between border-b border-gray-600/50 px-10 py-2">
           <div className="flex items-center gap-5">
             <img src={logoTileCover} className="w-[20%]" />
             <h1 className="text-4xl font-semibold"> GemHunter-AO</h1>
           </div>
-    
 
-        <ConnectButton
+          <ConnectButton
             profileModal={true}
             showBalance={false}
             showProfilePicture={true}
           />
-      </div>
-      
-      
-      :<></>}
+        </div>
+      ) : (
+        <></>
+      )}
       <div className="flex w-full h-[70%]">
-        <div className="w-[30%] flex flex-col">
+        <div className="w-[30%] h-full flex flex-col relative">
           {hasGameStarted ? (
             <div className="px-28 pt-28 flex flex-col  gap-2">
               <div className="flex flex-col">
@@ -430,6 +451,61 @@ export default function Home() {
               )}
             </button>
           </form>
+          <Drawer className="">
+            <DrawerTrigger
+              ref={fileInputRef}
+              className="absolute bottom-0 w-full font-medium rounded-lg mt-4 bg-[#252525] hover:bg-[#343434]transition-colors flex justify-center items-center"
+            >
+              Status
+            </DrawerTrigger>
+            <DrawerContent className="bg-[#121212] text-[#FFFFFF]">
+              <DrawerHeader className="flex flex-col  justify-center items-center w-full h-full gap-3">
+                <DrawerTitle className="text-5xl font-semibold border-b border-gray-600/50 flex items-end gap-2">
+                  {fetchingPlayerAndTileData.playerStats == "Safe"
+                    ? "In The Game..."
+                    : fetchingPlayerAndTileData.playerStats == "Doom"
+                    ? "Booom Lost The Game"
+                    : "Game End"}
+                  {fetchingPlayerAndTileData.playerStats == "Safe" ? (
+                    <IoRocketSharp size={60} />
+                  ) : fetchingPlayerAndTileData.playerStats == "Doom" ? (
+                    <GiRollingBomb size={70} />
+                  ) : (
+                    <PiThumbsUpFill size={65} />
+                  )}
+                </DrawerTitle>
+                {fetchingPlayerAndTileData.playerStats == "Safe" ? (
+                  <DrawerDescription className="text-2xl text-green-500">
+                    {fetchingPlayerAndTileData.moneyIncrease}x
+                  </DrawerDescription>
+                ) : (
+                  <></>
+                )}
+                <div className="flex items-end gap-5 border-b border-gray-600/50">
+                  <DrawerDescription className="text-2xl">
+                    Current Amount:{" "}
+                  </DrawerDescription>
+                  <DrawerTitle className="text-3xl">
+                    {fetchingPlayerAndTileData.playerbalance}
+                  </DrawerTitle>
+                </div>
+                <div className="flex items-end gap-5 border-b border-gray-600/50">
+                  <DrawerDescription className="text-2xl">
+                    Last Amount:{" "}
+                  </DrawerDescription>
+                  <DrawerTitle className="text-3xl">
+                    {fetchingPlayerAndTileData.record}
+                  </DrawerTitle>
+                </div>
+              </DrawerHeader>
+              <DrawerFooter>
+                {/* <Button>Submit</Button> */}
+                <DrawerClose>
+                  <Button variant="outline text-black">Cancel</Button>
+                </DrawerClose>
+              </DrawerFooter>
+            </DrawerContent>
+          </Drawer>
         </div>
         <div className="w-[70%] h-full flex items-center justify-center p-20 border-l border-gray-600/50">
           {/* {Array.from({ length: 25 }).map((_, index) => (
@@ -452,11 +528,15 @@ export default function Home() {
                       {/* <GiFireBomb size={28}/> */}
                       {val.open ? (
                         val.value === "Diamond" ? (
-                          <IoDiamondOutline size={28} className="absolute"/>
+                          <IoDiamondOutline size={28} className="absolute" />
                         ) : (
-                          <GiFireBomb size={28} className="text-red-400 absolute"/>
+                          <GiFireBomb
+                            size={28}
+                            className="text-red-400 absolute"
+                          />
                         )
-                      ) : tileLoading.load==true && tileLoading.indexOfTile==index? (
+                      ) : tileLoading.load == true &&
+                        tileLoading.indexOfTile == index ? (
                         <FiLoader size={26} className="animate-spin absolute" />
                       ) : (
                         <button
@@ -475,10 +555,12 @@ export default function Home() {
                   );
                 })}
               </div>
-              <button className="w-40 h-10 font-medium rounded-lg mt-0 
+              <button
+                className="w-40 h-10 font-medium rounded-lg mt-0 
               
                 bg-[#252525] hover:bg-[#343434]
-               transition-colors flex justify-center items-center">
+               transition-colors flex justify-center items-center"
+              >
                 End Game
               </button>
             </div>
