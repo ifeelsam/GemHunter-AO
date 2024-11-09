@@ -35,6 +35,7 @@ export default function Home() {
     betAmount: 1,
   });
   const [loading1, setLoading1] = useState(false);
+  const [endGameloading, setEndGameloading] = useState(false);
   const [tileLoading, setTileLoading] = useState({
     load: false,
     indexOfTile: null,
@@ -160,6 +161,8 @@ export default function Home() {
 
   async function endGame() {
     try {
+      setEndGameloading(true);
+
       const messageId = await message({
         process: currentProcessID,
         signer: createDataItemSigner(window.arweaveWallet),
@@ -198,6 +201,7 @@ export default function Home() {
         setTileLoading({ load: true, indexOfTile: null });
         handleButtonClick();
       }
+      setEndGameloading(false);
     } catch (error) {
       console.log(error);
     }
@@ -398,11 +402,11 @@ export default function Home() {
 
           <form
             onSubmit={handleLoginSubmit}
-            className="p-28 flex flex-col gap-2"
+            className="p-28 flex flex-col gap-2 relative"
           >
             <div className="flex flex-col">
               <label htmlFor="name" className="text-lg">
-                Number of Bombs to Place
+                Choose Number of Bombs
               </label>
               <input
                 type="number"
@@ -420,7 +424,7 @@ export default function Home() {
 
             <div className="flex flex-col">
               <label htmlFor="name" className="text-lg">
-                Set Your Bet Amount
+                Enter Your Bet Amount
               </label>
               <input
                 type="number"
@@ -450,22 +454,30 @@ export default function Home() {
                 "Start Game"
               )}
             </button>
+            {loading1 ? (
+              <p className="text-sm text-gray-400 mt-2">
+                If the game doesn't start within 15-20 seconds, please do a hard
+                refresh (Ctrl + Shift + R) 5-6 times and try again.
+              </p>
+            ) : (
+              <></>
+            )}
           </form>
           <Drawer className="">
             <DrawerTrigger
               ref={fileInputRef}
-              className="absolute bottom-0 w-full font-medium rounded-lg mt-4 bg-[#252525] hover:bg-[#343434]transition-colors flex justify-center items-center"
+              className="absolute bottom-0 w-full font-medium mt-4 bg-[#252525] hover:bg-[#343434]transition-colors flex justify-center items-center"
             >
-              Status
+              View Game Status
             </DrawerTrigger>
             <DrawerContent className="bg-[#121212] text-[#FFFFFF]">
               <DrawerHeader className="flex flex-col  justify-center items-center w-full h-full gap-3">
                 <DrawerTitle className="text-5xl font-semibold border-b border-gray-600/50 flex items-end gap-2">
                   {fetchingPlayerAndTileData.playerStats == "Safe"
-                    ? "In The Game..."
+                    ? "You're Safe! Game Ongoing..."
                     : fetchingPlayerAndTileData.playerStats == "Doom"
-                    ? "Booom Lost The Game"
-                    : "Game End"}
+                    ? "Boom! You Lost!"
+                    : "Game Over"}
                   {fetchingPlayerAndTileData.playerStats == "Safe" ? (
                     <IoRocketSharp size={60} />
                   ) : fetchingPlayerAndTileData.playerStats == "Doom" ? (
@@ -501,7 +513,7 @@ export default function Home() {
               <DrawerFooter>
                 {/* <Button>Submit</Button> */}
                 <DrawerClose>
-                  <Button variant="outline text-black">Cancel</Button>
+                  <Button variant="outline text-black">Close</Button>
                 </DrawerClose>
               </DrawerFooter>
             </DrawerContent>
@@ -560,8 +572,13 @@ export default function Home() {
               
                 bg-[#252525] hover:bg-[#343434]
                transition-colors flex justify-center items-center"
+                onClick={endGame}
               >
-                End Game
+                {endGameloading ? (
+                  <FiLoader size={26} className="animate-spin" />
+                ) : (
+                  "End Game"
+                )}
               </button>
             </div>
           ) : (

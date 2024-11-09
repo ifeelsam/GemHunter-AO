@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export default function Footer({className}) {
   return (
-    <div className={`w-full py-[2%] border-t border-gray-600/50 mt-7 flex items-center justify-center gap-10 ${className}`}>
+    <div className={`w-full py-[2%] border-t border-gray-600/50 flex items-center justify-center gap-10 ${className}`}>
       <a
         href="https://github.com/AAshu1412"
         target="_blank"
