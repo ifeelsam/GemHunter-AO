@@ -618,9 +618,7 @@ export default function Home() {
               <></>
             )}
           </form>
-          {connected ? (
-            <></>
-          ): (
+          {connected ?  (
             <Drawer>
               <DrawerTrigger
                 ref={fileInputRef}
@@ -846,7 +844,9 @@ export default function Home() {
                 </DrawerFooter>
               </DrawerContent>
             </Drawer>
-          ) }
+          ): (
+            <></>
+          )}
         </div>
         <div className="w-[70%] h-full flex items-center justify-center p-20 border-l border-gray-600/50">
           {/* {Array.from({ length: 25 }).map((_, index) => (
