@@ -17,6 +17,14 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "./ui/drawer";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from "./ui/button";
 import { useEffect, useState, useRef } from "react";
 import { FiLoader } from "react-icons/fi";
@@ -28,6 +36,7 @@ import { GiFireBomb } from "react-icons/gi";
 import { IoRocketSharp } from "react-icons/io5";
 import { GiRollingBomb } from "react-icons/gi";
 import { PiThumbsUpFill } from "react-icons/pi";
+import { IoCheckmarkDoneSharp } from "react-icons/io5";
 
 export default function Home() {
   const [playerEnterGameDetails, setPlayerEnterGameDetails] = useState({
@@ -42,41 +51,12 @@ export default function Home() {
   });
   const [startGameButtonDisable, setStartGameButtonDisable] = useState(false);
   const [currentProcessID, setCurrentProcessID] = useState("");
-  const [fetchingPlayerAndTileData, setFetchingPlayerAndTileData] = useState({
-    moneyIncrease: 1.2,
-    playerStats: "End",
-    record: 2,
-    playerbalance: 2,
-    tile: [
-      { value: "Diamond", open: false },
-      { value: "Diamond", open: true },
-      { value: "Bomb", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-      { value: "Diamond", open: true },
-    ],
-  });
+  const [fetchingPlayerAndTileData, setFetchingPlayerAndTileData] = useState(null);
   const [hasGameStarted, setHasGameStarted] = useState(false);
+  const [loadingScreenMessage, setLoadingScreenMessage] = useState(true);
+  const [lastMatch, setLastMatch] = useState(false);
   const fileInputRef = useRef(null);
+  const loadingScreen = useRef(null);
 
   const stripAnsiCodes = (str) =>
     str.replace(
@@ -88,62 +68,122 @@ export default function Home() {
   const { toast } = useToast();
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    if (connected) {
+      (async () => {
+        loadScreenButton();
+        try {
+          const messageId2 = await message({
+            process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
+            signer: createDataItemSigner(window.arweaveWallet),
+            tags: [{ name: "Action", value: "ReturnData" }],
+          });
+
+        //  // console.log("Fetching Data: " + messageId2);
+
+          let res1 = await result({
+            message: messageId2,
+            process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
+          });
+          const data = JSON.parse(res1.Messages[0].Data);
+          setFetchingPlayerAndTileData(data);
+          if (data.STATUS == "Safe") {
+            setHasGameStarted(true);
+            setStartGameButtonDisable(true);
+            setLastMatch(false);
+          }
+          setLoadingScreenMessage(false);
+        } catch (error) {
+          setLoadingScreenMessage(false);
+        }
+      })();
+    }
+  }, [connected]);
+  // // console.log(JSON.stringify(fetchingPlayerAndTileData));
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   async function openTile(num) {
     try {
       setTileLoading({ load: true, indexOfTile: num - 1 });
-      const messageId = await message({
-        process: currentProcessID,
-        signer: createDataItemSigner(window.arweaveWallet),
-        tags: [{ name: "Action", value: "Eval" }],
-        data: `
-  
-        local tileNumber=tonumber(${num})
-  if (gameStatus.hasDoomed == false and gameStatus.hasPlayerEndTheGame == false) then
-		for index, tilesDetails in ipairs(tiles) do
-			if (tileNumber == index and tilesDetails.open == false) then
-				tilesDetails.open = true
-				if (tilesDetails.value == "Bomb") then
-					gameStatus.hasDoomed = true
-					playerRecord = PlayerBetAmount
-					PlayerBetAmount = 0
-					PlayerStatus = "Doom"
-					break
-				end
-				moneyIncreaserdBy = moneyIncreaserdBy + 0.002
-				PlayerBetAmount = PlayerBet * (1 + moneyIncreaserdBy)
-				playerRecord = PlayerBetAmount
-				break
-			end
-		end
-	end
+      if (!connected) {
+        setLoading1(false);
+        toast({
+          variant: "destructive",
+          title: "Wallet Not Connected",
+          description: "Please Connect Your Wallet First",
+          action: <ToastAction altText="Try again">Try again</ToastAction>,
+        });
+        return;
+      }
+      //     const messageId = await message({
+      //       process: currentProcessID,
+      //       signer: createDataItemSigner(window.arweaveWallet),
+      //       tags: [{ name: "Action", value: "Eval" }],
+      //       data: `
 
-   local data = json.encode({
-    moneyIncrease = moneyIncreaserdBy,
-    playerbalance = PlayerBetAmount,
-    record=playerRecord,
-    playerStats = PlayerStatus,
-    tile = tiles
-  })
-  return data
-  
-  `,
+      //       local tileNumber=tonumber(${num})
+      // if (gameStatus.hasDoomed == false and gameStatus.hasPlayerEndTheGame == false) then
+      // 	for index, tilesDetails in ipairs(tiles) do
+      // 		if (tileNumber == index and tilesDetails.open == false) then
+      // 			tilesDetails.open = true
+      // 			if (tilesDetails.value == "Bomb") then
+      // 				gameStatus.hasDoomed = true
+      // 				playerRecord = PlayerBetAmount
+      // 				PlayerBetAmount = 0
+      // 				PlayerStatus = "Doom"
+      // 				break
+      // 			end
+      // 			moneyIncreaserdBy = moneyIncreaserdBy + 0.002
+      // 			PlayerBetAmount = PlayerBet * (1 + moneyIncreaserdBy)
+      // 			playerRecord = PlayerBetAmount
+      // 			break
+      // 		end
+      // 	end
+      // end
+
+      //  local data = json.encode({
+      //   moneyIncrease = moneyIncreaserdBy,
+      //   playerbalance = PlayerBetAmount,
+      //   record=playerRecord,
+      //   playerStats = PlayerStatus,
+      //   tile = tiles
+      // })
+      // return data
+
+      // `,
+      //     });
+
+      const messageId = await message({
+        process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
+        signer: createDataItemSigner(window.arweaveWallet),
+        tags: [
+          { name: "Action", value: "OpenTile" },
+          { name: "tileNumber", value: `${num}` },
+        ],
       });
 
-      console.log("open tile: " + messageId);
+      const messageId2 = await message({
+        process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
+        signer: createDataItemSigner(window.arweaveWallet),
+        tags: [{ name: "Action", value: "ReturnData" }],
+      });
+
+     // // console.log("open tile: " + messageId2);
 
       let res1 = await result({
-        message: messageId,
-        process: currentProcessID,
+        message: messageId2,
+        process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
       });
-
-      const data = stripAnsiCodes(res1.Output.data.output);
-      const data2 = JSON.parse(data);
-      setFetchingPlayerAndTileData(data2);
+      const data = JSON.parse(res1.Messages[0].Data);
+      // const data = stripAnsiCodes(res1.Output.data.output);
+      // const data2 = JSON.parse(data);
+      // setFetchingPlayerAndTileData(data2);
       // console.log("Tiles: ", data);
-      if (data2.playerStats == "Doom") {
+      setFetchingPlayerAndTileData(data);
+      if (data.STATUS == "Doom") {
         setTileLoading({ load: true, indexOfTile: null });
         handleButtonClick();
+        setLastMatch(false);
       } else {
         setTileLoading({ load: false, indexOfTile: null });
       }
@@ -162,44 +202,66 @@ export default function Home() {
   async function endGame() {
     try {
       setEndGameloading(true);
+      if (!connected) {
+        setLoading1(false);
+        toast({
+          variant: "destructive",
+          title: "Wallet Not Connected",
+          description: "Please Connect Your Wallet First",
+          action: <ToastAction altText="Try again">Try again</ToastAction>,
+        });
+        return;
+      }
 
       const messageId = await message({
-        process: currentProcessID,
+        process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
         signer: createDataItemSigner(window.arweaveWallet),
-        tags: [{ name: "Action", value: "Eval" }],
-        data: `
+        tags: [{ name: "Action", value: "EndGame" }],
+        //       data: `
 
-  gameStatus.hasPlayerEndTheGame = true
-	gameStatus.hasGameStarted = false
-	gameStatus.hasSetBombs = false
-	gameStatus.hasDoomed = false
-   local data = json.encode({
-    moneyIncrease = moneyIncreaserdBy,
-    playerbalance = PlayerBetAmount,
-    record=playerRecord,
-    playerStats = "End",
-    tile = tiles
-  })
-  return data
-  
-  
-  `,
+        // gameStatus.hasPlayerEndTheGame = true
+        // gameStatus.hasGameStarted = false
+        // gameStatus.hasSetBombs = false
+        // gameStatus.hasDoomed = false
+        //  local data = json.encode({
+        //   moneyIncrease = moneyIncreaserdBy,
+        //   playerbalance = PlayerBetAmount,
+        //   record=playerRecord,
+        //   playerStats = "End",
+        //   tile = tiles
+        // })
+        // return data
+
+        // `,
       });
 
-      console.log("End Game: " + messageId);
+      const messageId2 = await message({
+        process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
+        signer: createDataItemSigner(window.arweaveWallet),
+        tags: [{ name: "Action", value: "ReturnData" }],
+      });
+
+   //   // console.log("End Game: " + messageId2);
 
       let res1 = await result({
-        message: messageId,
-        process: currentProcessID,
+        message: messageId2,
+        process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
       });
 
-      const data = stripAnsiCodes(res1.Output.data.output);
-      const data2 = JSON.parse(data);
-      setFetchingPlayerAndTileData(data2);
-      // console.log("Tiles: ", data);
-      if (data2.playerStats == "End") {
+      const data = JSON.parse(res1.Messages[0].Data);
+      // const data = stripAnsiCodes(res1.Output.data.output);
+      // const data2 = JSON.parse(data);
+      // setFetchingPlayerAndTileData(data2);
+      setFetchingPlayerAndTileData(data);
+     // // console.log("Tiles: ", data);
+      // if (data2.playerStats == "End") {
+      //   setTileLoading({ load: true, indexOfTile: null });
+      //   handleButtonClick();
+      // }
+      if (data.STATUS == "End") {
         setTileLoading({ load: true, indexOfTile: null });
         handleButtonClick();
+        setLastMatch(false);
       }
       setEndGameloading(false);
     } catch (error) {
@@ -211,12 +273,20 @@ export default function Home() {
     fileInputRef.current.click();
   };
 
+  const loadScreenButton = () => {
+    if (fetchingPlayerAndTileData.STATUS == "Safe") {
+      setLastMatch(false);
+    } else {
+      setLastMatch(true);
+    }
+    loadingScreen.current.click();
+  };
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const handleInput = (event) => {
     const name = event.target.name;
     const value = event.target.value;
-    console.log(name, value);
+   // // console.log(name, value);
     setPlayerEnterGameDetails({ ...playerEnterGameDetails, [name]: value });
   };
 
@@ -236,103 +306,117 @@ export default function Home() {
         return;
       }
 
-      const processId = await spawn({
-        module: "sBmq5pehE1_Ed5YBs4DGV4FMftoKwo_cVVsCpPND36Q",
-        scheduler: "_GQ33BkPtZrqxA84vM8Zk-N2aO0toNNu_C-l-rawrBA",
-        signer: createDataItemSigner(window.arweaveWallet),
-      });
-      console.log(processId);
-      setCurrentProcessID(processId);
+      // const processId = await spawn({
+      //   module: "sBmq5pehE1_Ed5YBs4DGV4FMftoKwo_cVVsCpPND36Q",
+      //   scheduler: "_GQ33BkPtZrqxA84vM8Zk-N2aO0toNNu_C-l-rawrBA",
+      //   signer: createDataItemSigner(window.arweaveWallet),
+      // });
+      // console.log(processId);
+      // setCurrentProcessID(processId);
 
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      // await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      // const messageId = await message({
+      //   process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
+      //   signer: createDataItemSigner(window.arweaveWallet),
+      //   tags: [{ name: "Action", value: "StartGame" },{ name: "numberOfBombs", value: `${playerEnterGameDetails.bombs}` },{ name: "betAmount", value: `${playerEnterGameDetails.betAmount}` },]
+      //       tags: [{ name: "Action", value: "Eval" }],
+      // //       data: `
+
+      // json = require("json")
+
+      // tiles = {}
+      // gameStatus = {
+      //   hasGameStarted = false,
+      //   hasSetBombs = false,
+      //   hasDoomed = false,
+      //   hasPlayerEndTheGame = false
+      // }
+
+      // moneyIncreaserdBy = 0
+      // playerRecord = nil
+      // PlayerBetAmount = 0
+      // PlayerBet = 0
+      // PlayerStatus = "Safe"
+
+      // local bombss=tonumber(${playerEnterGameDetails.bombs})
+      //   if (bombss > 0 and bombss < 25 and gameStatus.hasSetBombs == false and gameStatus.hasDoomed == false and gameStatus.hasPlayerEndTheGame == false) then
+      //     for i = 1, bombss, 1 do
+
+      //       local setupBombInTile = {
+      //         open = false,
+      //         value = "Bomb"
+      //       }
+      //       table.insert(tiles, setupBombInTile)
+      //     end
+      //     for i = 1, 25 - bombss, 1 do
+
+      //       local setupBombInTile = {
+      //         open = false,
+      //         value = "Diamond"
+      //       }
+      //       table.insert(tiles, setupBombInTile)
+      //     end
+      //     moneyIncreaserdBy = (bombss / 10)
+      //     gameStatus.hasSetBombs = true
+      //     gameStatus.hasGameStarted = true
+      //   end
+
+      // local bettAmount = tonumber(${playerEnterGameDetails.betAmount})
+      //   if (bettAmount > 0 and gameStatus.hasPlayerEndTheGame == false) then
+      //     PlayerBetAmount = bettAmount
+      //     PlayerBet = PlayerBetAmount
+      //     playerRecord = PlayerBetAmount
+      //   end
+
+      //   if (gameStatus.hasGameStarted == true and gameStatus.hasDoomed == false and gameStatus.hasPlayerEndTheGame == false) then
+      //     for i = # tiles, 2, -1 do
+      //       local j = math.random(i)
+      //       tiles[i], tiles[j] = tiles[j], tiles[i]
+      //     end
+      //   end
+
+      //   local data = json.encode({
+      //   moneyIncrease = moneyIncreaserdBy,
+      //   playerbalance = PlayerBetAmount,
+      //   record=playerRecord,
+      //   playerStats = PlayerStatus,
+      //   tile = tiles
+      // })
+      // return data
+
+      // `,
+      // });
 
       const messageId = await message({
-        process: processId,
+        process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
         signer: createDataItemSigner(window.arweaveWallet),
-        tags: [{ name: "Action", value: "Eval" }],
-        data: `
-  
-  json = require("json")
-  
-  tiles = {}
-  gameStatus = {
-    hasGameStarted = false,
-    hasSetBombs = false,
-    hasDoomed = false,
-    hasPlayerEndTheGame = false
-  }
-  
-  moneyIncreaserdBy = 0
-  playerRecord = nil
-  PlayerBetAmount = 0
-  PlayerBet = 0
-  PlayerStatus = "Safe"
-  
-  
-  
-  local bombss=tonumber(${playerEnterGameDetails.bombs}) 
-    if (bombss > 0 and bombss < 25 and gameStatus.hasSetBombs == false and gameStatus.hasDoomed == false and gameStatus.hasPlayerEndTheGame == false) then
-      for i = 1, bombss, 1 do
-      
-        local setupBombInTile = {
-          open = false,
-          value = "Bomb"
-        }
-        table.insert(tiles, setupBombInTile)
-      end
-      for i = 1, 25 - bombss, 1 do
-      
-        local setupBombInTile = {
-          open = false,
-          value = "Diamond"
-        }
-        table.insert(tiles, setupBombInTile)
-      end
-      moneyIncreaserdBy = (bombss / 10)
-      gameStatus.hasSetBombs = true
-      gameStatus.hasGameStarted = true
-    end
-  
-  
-  local bettAmount = tonumber(${playerEnterGameDetails.betAmount})
-    if (bettAmount > 0 and gameStatus.hasPlayerEndTheGame == false) then
-      PlayerBetAmount = bettAmount
-      PlayerBet = PlayerBetAmount
-      playerRecord = PlayerBetAmount
-    end
-  
-  
-    if (gameStatus.hasGameStarted == true and gameStatus.hasDoomed == false and gameStatus.hasPlayerEndTheGame == false) then
-      for i = # tiles, 2, -1 do
-        local j = math.random(i)
-        tiles[i], tiles[j] = tiles[j], tiles[i]
-      end
-    end
-  
-  
-    local data = json.encode({
-    moneyIncrease = moneyIncreaserdBy,
-    playerbalance = PlayerBetAmount,
-    record=playerRecord,
-    playerStats = PlayerStatus,
-    tile = tiles
-  })
-  return data
-  
-  `,
+        tags: [
+          { name: "Action", value: "StartGame" },
+          { name: "numberOfBombs", value: `${playerEnterGameDetails.bombs}` },
+          { name: "betAmount", value: `${playerEnterGameDetails.betAmount}` },
+        ],
       });
 
-      console.log("Start Game: " + messageId);
+      const messageId2 = await message({
+        process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
+        signer: createDataItemSigner(window.arweaveWallet),
+        tags: [{ name: "Action", value: "ReturnData" }],
+      });
+
+     // // console.log("Start Game: " + messageId2);
 
       let res1 = await result({
-        message: messageId,
-        process: processId,
+        message: messageId2,
+        process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
       });
-
-      const data = stripAnsiCodes(res1.Output.data.output);
-      const data2 = JSON.parse(data);
-      setFetchingPlayerAndTileData(data2);
-      // console.log("Tiles: ", data);
+   //   // console.log("Tiles: ", JSON.stringify(res1));
+      const data = JSON.parse(res1.Messages[0].Data);
+      // const data = stripAnsiCodes(res1.Output.data.output);
+      // const data2 = JSON.parse(data);
+      // setFetchingPlayerAndTileData(data2);
+      setFetchingPlayerAndTileData(data);
+   //   // console.log("Tiles: ", data);
       setLoading1(false);
       setStartGameButtonDisable(true);
       setHasGameStarted(true);
@@ -348,8 +432,6 @@ export default function Home() {
       });
     }
   };
-
-  console.log(fetchingPlayerAndTileData);
 
   return (
     <div className="h-screen w-full bg-[#121212] relative text-[#FFFFFF]">
@@ -372,27 +454,51 @@ export default function Home() {
       <div className="flex w-full h-[70%]">
         <div className="w-[30%] h-full flex flex-col relative">
           {hasGameStarted ? (
-            <div className="px-28 pt-28 flex flex-col  gap-2">
+            <div className="px-28 pt-10 flex flex-col  gap-2">
               <div className="flex flex-col">
                 <h1 className="text-lg font-semibold">
                   {" "}
                   Current Win Multiplier
                 </h1>
                 <h1 className="bg-[#252525] h-10 px-2 py-4 flex items-center text-green-500 text-lg rounded-sm">
-                  {fetchingPlayerAndTileData.moneyIncrease}
+                  {fetchingPlayerAndTileData.INCREASER}
                 </h1>
               </div>
               <div className="flex flex-col">
-                <h1 className="text-lg font-semibold"> Your Updated Balance</h1>
+                <h1 className="text-lg font-semibold">
+                  {" "}
+                  Current Winnings Balance
+                </h1>
                 <h1
                   className={`bg-[#252525] h-10 px-2 py-4 flex items-center ${
-                    playerEnterGameDetails.betAmount ==
-                    fetchingPlayerAndTileData.playerbalance
+                    playerEnterGameDetails.BET ==
+                    fetchingPlayerAndTileData.WINNINGAMOUNT
                       ? "text-[#FFFFFF]"
                       : "text-green-500"
                   }  text-lg rounded-sm`}
                 >
-                  {fetchingPlayerAndTileData.playerbalance}
+                  {fetchingPlayerAndTileData.WINNINGAMOUNT}
+                </h1>
+              </div>
+              <div className="flex flex-col">
+                <h1 className="text-lg font-semibold">
+                  {" "}
+                  Current Bet You Placed
+                </h1>
+                <h1
+                  className={`bg-[#252525] h-10 px-2 py-4 flex items-center 
+                   text-[#FFFFFF]  text-lg rounded-sm`}
+                >
+                  {fetchingPlayerAndTileData.BET}
+                </h1>
+              </div>
+              <div className="flex flex-col">
+                <h1 className="text-lg font-semibold"> Total Balance</h1>
+                <h1
+                  className={`bg-[#252525] h-10 px-2 py-4 flex items-center 
+                  text-[#FFFFFF]  text-lg rounded-sm`}
+                >
+                  {fetchingPlayerAndTileData.BALANCE}
                 </h1>
               </div>
             </div>
@@ -402,7 +508,7 @@ export default function Home() {
 
           <form
             onSubmit={handleLoginSubmit}
-            className="p-28 flex flex-col gap-2 relative"
+            className="px-28 pt-16 flex flex-col gap-2 relative"
           >
             <div className="flex flex-col">
               <label htmlFor="name" className="text-lg">
@@ -472,41 +578,156 @@ export default function Home() {
             </DrawerTrigger>
             <DrawerContent className="bg-[#121212] text-[#FFFFFF]">
               <DrawerHeader className="flex flex-col  justify-center items-center w-full h-full gap-3">
+                {lastMatch ? (
+                  <DrawerTitle className="font-semibold border-b border-gray-600/50">
+                    Last Match
+                  </DrawerTitle>
+                ) : (
+                  <></>
+                )}
                 <DrawerTitle className="text-5xl font-semibold border-b border-gray-600/50 flex items-end gap-2">
-                  {fetchingPlayerAndTileData.playerStats == "Safe"
+                  {fetchingPlayerAndTileData.STATUS == "Safe"
                     ? "You're Safe! Game Ongoing..."
-                    : fetchingPlayerAndTileData.playerStats == "Doom"
+                    : fetchingPlayerAndTileData.STATUS == "Doom"
                     ? "Boom! You Lost!"
                     : "Game Over"}
-                  {fetchingPlayerAndTileData.playerStats == "Safe" ? (
+                  {fetchingPlayerAndTileData.STATUS == "Safe" ? (
                     <IoRocketSharp size={60} />
-                  ) : fetchingPlayerAndTileData.playerStats == "Doom" ? (
+                  ) : fetchingPlayerAndTileData.STATUS == "Doom" ? (
                     <GiRollingBomb size={70} />
                   ) : (
                     <PiThumbsUpFill size={65} />
                   )}
                 </DrawerTitle>
-                {fetchingPlayerAndTileData.playerStats == "Safe" ? (
+                {fetchingPlayerAndTileData.STATUS == "Safe" ? (
                   <DrawerDescription className="text-2xl text-green-500">
-                    {fetchingPlayerAndTileData.moneyIncrease}x
+                    {fetchingPlayerAndTileData.INCREASER}x
                   </DrawerDescription>
                 ) : (
                   <></>
                 )}
-                <div className="flex items-end gap-5 border-b border-gray-600/50">
+                {/* <div className="flex items-end gap-5 border-b border-gray-600/50">
                   <DrawerDescription className="text-2xl">
-                    Current Amount:{" "}
+                    Current Game's Bet:{" "}
                   </DrawerDescription>
                   <DrawerTitle className="text-3xl">
-                    {fetchingPlayerAndTileData.playerbalance}
+                    {fetchingPlayerAndTileData.WINNINGAMOUNT}
                   </DrawerTitle>
                 </div>
                 <div className="flex items-end gap-5 border-b border-gray-600/50">
                   <DrawerDescription className="text-2xl">
-                    Last Amount:{" "}
+                    Last Game's Bet:{" "}
                   </DrawerDescription>
                   <DrawerTitle className="text-3xl">
-                    {fetchingPlayerAndTileData.record}
+                    {fetchingPlayerAndTileData.LASTAMOUNT}
+                  </DrawerTitle>
+                </div> */}
+                {fetchingPlayerAndTileData.STATUS == "Doom" &&
+                lastMatch == true ? (
+                  <>
+                    <div className="flex items-end gap-5 border-b border-gray-600/50">
+                      <DrawerDescription className="text-2xl">
+                        In the last match, you lost your bet:{" "}
+                      </DrawerDescription>
+                      <DrawerTitle className="text-3xl">
+                        {fetchingPlayerAndTileData.LASTBETAMOUNT}
+                      </DrawerTitle>
+                    </div>
+                    <div className="flex items-end gap-5 border-b border-gray-600/50">
+                      <DrawerDescription className="text-2xl">
+                        Total amount you missed winning last round:{" "}
+                      </DrawerDescription>
+                      <DrawerTitle className="text-3xl">
+                        {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
+                      </DrawerTitle>
+                    </div>
+                  </>
+                ) : fetchingPlayerAndTileData.STATUS == "Doom" &&
+                  lastMatch == false ? (
+                  <>
+                    <div className="flex items-end gap-5 border-b border-gray-600/50">
+                      <DrawerDescription className="text-2xl">
+                        You lost your current bet:{" "}
+                      </DrawerDescription>
+                      <DrawerTitle className="text-3xl">
+                        {fetchingPlayerAndTileData.LASTBETAMOUNT}
+                      </DrawerTitle>
+                    </div>
+                    <div className="flex items-end gap-5 border-b border-gray-600/50">
+                      <DrawerDescription className="text-2xl">
+                        Total potential winnings lost this round:
+                      </DrawerDescription>
+                      <DrawerTitle className="text-3xl">
+                        {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
+                      </DrawerTitle>
+                    </div>
+                  </>
+                ) : fetchingPlayerAndTileData.STATUS == "End" &&
+                  lastMatch == true ? (
+                  <>
+                    <div className="flex items-end gap-5 border-b border-gray-600/50">
+                      <DrawerDescription className="text-2xl">
+                        Your bet from the last match was:
+                      </DrawerDescription>
+                      <DrawerTitle className="text-3xl">
+                        {fetchingPlayerAndTileData.LASTBETAMOUNT}
+                      </DrawerTitle>
+                    </div>
+                    <div className="flex items-end gap-5 border-b border-gray-600/50">
+                      <DrawerDescription className="text-2xl">
+                        Total winnings from the last match:
+                      </DrawerDescription>
+                      <DrawerTitle className="text-3xl">
+                        {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
+                      </DrawerTitle>
+                    </div>
+                  </>
+                ) : fetchingPlayerAndTileData.STATUS == "End" &&
+                  lastMatch == false ? (
+                  <>
+                    <div className="flex items-end gap-5 border-b border-gray-600/50">
+                      <DrawerDescription className="text-2xl">
+                        Your current bet:
+                      </DrawerDescription>
+                      <DrawerTitle className="text-3xl">
+                        {fetchingPlayerAndTileData.LASTBETAMOUNT}
+                      </DrawerTitle>
+                    </div>
+                    <div className="flex items-end gap-5 border-b border-gray-600/50">
+                      <DrawerDescription className="text-2xl">
+                        Total winnings for this round:
+                      </DrawerDescription>
+                      <DrawerTitle className="text-3xl">
+                        {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
+                      </DrawerTitle>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-end gap-5 border-b border-gray-600/50">
+                      <DrawerDescription className="text-2xl">
+                        Current bet placed:
+                      </DrawerDescription>
+                      <DrawerTitle className="text-3xl">
+                        {fetchingPlayerAndTileData.BET}
+                      </DrawerTitle>
+                    </div>
+                    <div className="flex items-end gap-5 border-b border-gray-600/50">
+                      <DrawerDescription className="text-2xl">
+                        Total winnings so far:
+                      </DrawerDescription>
+                      <DrawerTitle className="text-3xl">
+                        {fetchingPlayerAndTileData.WINNINGAMOUNT}
+                      </DrawerTitle>
+                    </div>
+                  </>
+                )}
+                <div className="flex items-end gap-5 border-b border-gray-600/50">
+                  <DrawerDescription className="text-2xl">
+                    Total Balance:
+                  </DrawerDescription>
+                  <DrawerTitle className="text-3xl">
+                    {fetchingPlayerAndTileData.BALANCE}
                   </DrawerTitle>
                 </div>
               </DrawerHeader>
@@ -530,7 +751,7 @@ export default function Home() {
             <div className="w-full h-full flex flex-col space-y-4">
               {" "}
               <div className="w-full h-full grid grid-cols-5 gap-4">
-                {fetchingPlayerAndTileData.tile.map((val, index) => {
+                {fetchingPlayerAndTileData.TILE.map((val, index) => {
                   return (
                     <div
                       key={index}
@@ -599,6 +820,30 @@ export default function Home() {
         </div>
       </div>
       <Footer />
+      <Dialog>
+        <DialogTrigger ref={loadingScreen}></DialogTrigger>
+        <DialogContent>
+          <DialogHeader className="flex flex-col items-center ">
+            <DialogTitle>
+              {loadingScreenMessage == true ? (
+                <FiLoader size={30} className="animate-spin" />
+              ) : (
+                <IoCheckmarkDoneSharp size={30} />
+              )}
+            </DialogTitle>
+            {loadingScreenMessage == true ? (
+              <DialogDescription className="text-black">
+                Please wait a moment—your game data is loading! This may take a
+                few seconds.
+              </DialogDescription>
+            ) : (
+              <DialogDescription className="text-black">
+                Data loaded successfully! You’re all set to continue.
+              </DialogDescription>
+            )}
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
