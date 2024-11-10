@@ -22,7 +22,7 @@
   - Players can end the game at any time to secure their winnings. 
 
   **Winning**:  
-  If players successfully open all the tiles containing diamonds and avoid the bombs, their earnings are further boosted by a **5x multiplier**, providing a significant reward.
+  If players successfully open all the tiles containing diamonds and avoid the bombs, their earnings are further directly boosted by a **10x multiplier**, providing a significant reward.
 
   The game tracks player progress using an lsqlite3 database, ensuring that players can resume from where they left off, even after exiting.
 </p>
@@ -51,9 +51,9 @@
 
 Welcome to **GemHunter-AO**, a thrilling grid-based gambling game where strategy, luck, and timing determine your rewards. In this game, players can choose a grid filled with hidden mines, each holding the potential for significant wins or losses. Your goal is to uncover diamonds and increase your earnings by selecting tiles on a 5x5 grid without hitting a bomb.
 
-The more bombs you choose, the higher the potential reward, and for every diamond you uncover, your earnings increase by `0.002` times.
+The more bombs you choose, the higher the potential reward, and for every diamond you uncover, your earnings increase by `0.025` times.
 
-If you're able to successfully avoid the bombs and uncover all the diamonds, your winnings are further amplified by a `5x` multiplier, rewarding your skill and strategy. Players can stop the game at any point to cash out, and their game data is securely stored in a **Lua lsqlite3** database, ensuring that they can continue from where they left off, even if they leave mid-game.
+If you're able to successfully avoid the bombs and uncover all the diamonds, your winnings are further amplified by a `10x` multiplier, rewarding your skill and strategy. Players can stop the game at any point to cash out, and their game data is securely stored in a **Lua lsqlite3** database, ensuring that they can continue from where they left off, even if they leave mid-game.
 
 **Developed for the Hacker House event by Arweave India**, GemHunter-AO combines excitement with innovation, providing a captivating and rewarding gaming experience.
 
@@ -84,9 +84,9 @@ If you're able to successfully avoid the bombs and uncover all the diamonds, you
 - Players can choose the number of bombs they want on the grid. The more bombs chosen, the greater the potential reward.
 
 ### 🚀 **Game Progression and Win Mechanism**
-- Every tile opened increases the reward by a fixed amount (**0.002**).
+- Every tile opened increases the reward by a fixed amount (**0.025**).
 - Discovering diamonds helps players accumulate more winnings. 
-- **Win Bonus**: If players successfully open all the tiles containing diamonds without hitting a bomb, their earnings are boosted by a **5x multiplier**. Players can choose to cash out anytime to secure their winnings.
+- **Win Bonus**: If players successfully open all the tiles containing diamonds without hitting a bomb, their earnings are directly boosted by a **10x multiplier**. Players can choose to cash out anytime to secure their winnings.
 
 ### 🔄 **Game Continuation Feature**
 - Players can leave the game and return later to continue from where they left off, with all previous game data preserved.
@@ -103,7 +103,7 @@ If you're able to successfully avoid the bombs and uncover all the diamonds, you
 1. **Stake your bet**: Choose your bet amount and select how many bombs you want to hide in the grid.
 2. **Open tiles**: Start opening tiles. For every diamond found, your earnings increase.
 3. **Avoid bombs**: Be careful—hitting a bomb means losing your stake. If you choose to stop before opening a bomb, you can cash out with your accumulated earnings.
-4. **Winning**: Successfully open all the diamond tiles without hitting a bomb, and enjoy a 5x multiplier bonus on your winnings.
+4. **Winning**: Successfully open all the diamond tiles without hitting a bomb, and enjoy a 10x multiplier bonus on your winnings.
 5. **Seamless Continuation**: All progress is saved in real-time, so you can pick up where you left off whenever you return.
 
 

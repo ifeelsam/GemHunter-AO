@@ -53,10 +53,10 @@ export default function Home() {
   const [startGameButtonDisable, setStartGameButtonDisable] = useState(false);
   const [currentProcessID, setCurrentProcessID] = useState("");
   const [fetchingPlayerAndTileData, setFetchingPlayerAndTileData] = useState({
-    WINNINGAMOUNT: 1,
+    WINNINGAMOUNT: 0,
     BET: 0,
-    LASTBETAMOUNT: 1,
-    LASTWINNINGAMOUNT: 1,
+    LASTBETAMOUNT: 0,
+    LASTWINNINGAMOUNT: 0,
     TILE: [
       { open: false, value: "Diamond" },
       { open: false, value: "Diamond" },
@@ -89,7 +89,7 @@ export default function Home() {
     ADDRESS: "yWEDs-sho-5Ka7ql_Ov71GNFdHqLspekxfhAo1bcqtU",
     INCREASER: 0,
     HASGAMESTARTED: 0,
-    BALANCE: 100,
+    BALANCE: 0,
     HASSETBOMBS: 0,
   });
   const [hasGameStarted, setHasGameStarted] = useState(false);
@@ -108,37 +108,37 @@ export default function Home() {
   const { toast } = useToast();
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  useEffect(() => {
-    if (connected) {
-      (async () => {
-        loadScreenButton();
-        try {
-          const messageId2 = await message({
-            process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
-            signer: createDataItemSigner(window.arweaveWallet),
-            tags: [{ name: "Action", value: "ReturnData" }],
-          });
+  // useEffect(() => {
+  //   if (connected) {
+  //     (async () => {
+  //       loadScreenButton();
+  //       try {
+  //         const messageId2 = await message({
+  //           process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
+  //           signer: createDataItemSigner(window.arweaveWallet),
+  //           tags: [{ name: "Action", value: "ReturnData" }],
+  //         });
 
-          //  // console.log("Fetching Data: " + messageId2);
+  //         //  // console.log("Fetching Data: " + messageId2);
 
-          let res1 = await result({
-            message: messageId2,
-            process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
-          });
-          const data = JSON.parse(res1.Messages[0].Data);
-          setFetchingPlayerAndTileData(data);
-          if (data.STATUS == "Safe") {
-            setHasGameStarted(true);
-            setStartGameButtonDisable(true);
-            setLastMatch(false);
-          }
-          setLoadingScreenMessage(false);
-        } catch (error) {
-          setLoadingScreenMessage(false);
-        }
-      })();
-    }
-  }, [connected]);
+  //         let res1 = await result({
+  //           message: messageId2,
+  //           process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
+  //         });
+  //         const data = JSON.parse(res1.Messages[0].Data);
+  //         setFetchingPlayerAndTileData(data);
+  //         if (data.STATUS == "Safe") {
+  //           setHasGameStarted(true);
+  //           setStartGameButtonDisable(true);
+  //           setLastMatch(false);
+  //         }
+  //         setLoadingScreenMessage(false);
+  //       } catch (error) {
+  //         setLoadingScreenMessage(false);
+  //       }
+  //     })();
+  //   }
+  // }, [connected]);
   // // console.log(JSON.stringify(fetchingPlayerAndTileData));
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -619,6 +619,8 @@ export default function Home() {
             )}
           </form>
           {connected ? (
+            <></>
+          ): (
             <Drawer>
               <DrawerTrigger
                 ref={fileInputRef}
@@ -642,7 +644,9 @@ export default function Home() {
                       ? "Boom! You Lost!"
                       : fetchingPlayerAndTileData.STATUS === "Win"
                       ? "Congratulations! You Won!"
-                      : "Game Over"}
+                      : fetchingPlayerAndTileData.STATUS === "End"
+                      ? "Game Over"
+                      :"You haven't played any matches yet!"}
                     {fetchingPlayerAndTileData.STATUS == "Safe" ? (
                       <IoRocketSharp size={60} />
                     ) : fetchingPlayerAndTileData.STATUS == "Doom" ? (
@@ -842,9 +846,7 @@ export default function Home() {
                 </DrawerFooter>
               </DrawerContent>
             </Drawer>
-          ) : (
-            <></>
-          )}
+          ) }
         </div>
         <div className="w-[70%] h-full flex items-center justify-center p-20 border-l border-gray-600/50">
           {/* {Array.from({ length: 25 }).map((_, index) => (
