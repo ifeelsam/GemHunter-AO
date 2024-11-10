@@ -614,10 +614,10 @@ export default function Home() {
             )}
           </form>
           {connected ? (
-            <Drawer className="">
+            <Drawer>
               <DrawerTrigger
                 ref={fileInputRef}
-                className="absolute bottom-0 w-full font-medium mt-4 bg-[#252525] hover:bg-[#343434]transition-colors flex justify-center items-center"
+                className="absolute bottom-3 w-[50%] right-0 mr-[2%] h-[5%] rounded-sm font-medium mt-4 bg-[#252525] hover:bg-[#343434]transition-colors flex justify-center items-center"
               >
                 View Game Status
               </DrawerTrigger>
