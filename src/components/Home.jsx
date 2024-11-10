@@ -37,6 +37,7 @@ import { IoRocketSharp } from "react-icons/io5";
 import { GiRollingBomb } from "react-icons/gi";
 import { PiThumbsUpFill } from "react-icons/pi";
 import { IoCheckmarkDoneSharp } from "react-icons/io5";
+import { GiGlassCelebration } from "react-icons/gi";
 
 export default function Home() {
   const [playerEnterGameDetails, setPlayerEnterGameDetails] = useState({
@@ -220,6 +221,10 @@ export default function Home() {
       // console.log("Tiles: ", data);
       setFetchingPlayerAndTileData(data);
       if (data.STATUS == "Doom") {
+        setTileLoading({ load: true, indexOfTile: null });
+        handleButtonClick();
+        setLastMatch(false);
+      } else if (data.STATUS == "Win") {
         setTileLoading({ load: true, indexOfTile: null });
         handleButtonClick();
         setLastMatch(false);
@@ -625,15 +630,19 @@ export default function Home() {
                   <></>
                 )}
                 <DrawerTitle className="text-5xl font-semibold border-b border-gray-600/50 flex items-end gap-2">
-                  {fetchingPlayerAndTileData.STATUS == "Safe"
+                  {fetchingPlayerAndTileData.STATUS === "Safe"
                     ? "You're Safe! Game Ongoing..."
-                    : fetchingPlayerAndTileData.STATUS == "Doom"
+                    : fetchingPlayerAndTileData.STATUS === "Doom"
                     ? "Boom! You Lost!"
+                    : fetchingPlayerAndTileData.STATUS === "Win"
+                    ? "Congratulations! You Won!"
                     : "Game Over"}
                   {fetchingPlayerAndTileData.STATUS == "Safe" ? (
                     <IoRocketSharp size={60} />
                   ) : fetchingPlayerAndTileData.STATUS == "Doom" ? (
                     <GiRollingBomb size={70} />
+                  ) : fetchingPlayerAndTileData.STATUS == "Win" ? (
+                    <GiGlassCelebration size={90} />
                   ) : (
                     <PiThumbsUpFill size={65} />
                   )}
@@ -642,25 +651,14 @@ export default function Home() {
                   <DrawerDescription className="text-2xl text-green-500">
                     {fetchingPlayerAndTileData.INCREASER}x
                   </DrawerDescription>
+                ) : fetchingPlayerAndTileData.STATUS == "Win" ? (
+                  <DrawerDescription className="text-2xl text-green-500">
+                    {fetchingPlayerAndTileData.INCREASER}x
+                  </DrawerDescription>
                 ) : (
                   <></>
                 )}
-                {/* <div className="flex items-end gap-5 border-b border-gray-600/50">
-                  <DrawerDescription className="text-2xl">
-                    Current Game's Bet:{" "}
-                  </DrawerDescription>
-                  <DrawerTitle className="text-3xl">
-                    {fetchingPlayerAndTileData.WINNINGAMOUNT}
-                  </DrawerTitle>
-                </div>
-                <div className="flex items-end gap-5 border-b border-gray-600/50">
-                  <DrawerDescription className="text-2xl">
-                    Last Game's Bet:{" "}
-                  </DrawerDescription>
-                  <DrawerTitle className="text-3xl">
-                    {fetchingPlayerAndTileData.LASTAMOUNT}
-                  </DrawerTitle>
-                </div> */}
+
                 {fetchingPlayerAndTileData.STATUS == "Doom" &&
                 lastMatch == true ? (
                   <>
@@ -735,6 +733,66 @@ export default function Home() {
                     <div className="flex items-end gap-5 border-b border-gray-600/50">
                       <DrawerDescription className="text-2xl">
                         Total winnings for this round:
+                      </DrawerDescription>
+                      <DrawerTitle className="text-3xl">
+                        {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
+                      </DrawerTitle>
+                    </div>
+                  </>
+                ) : fetchingPlayerAndTileData.STATUS == "End" &&
+                  lastMatch == false ? (
+                  <>
+                    <div className="flex items-end gap-5 border-b border-gray-600/50">
+                      <DrawerDescription className="text-2xl">
+                        Your current bet:
+                      </DrawerDescription>
+                      <DrawerTitle className="text-3xl">
+                        {fetchingPlayerAndTileData.LASTBETAMOUNT}
+                      </DrawerTitle>
+                    </div>
+                    <div className="flex items-end gap-5 border-b border-gray-600/50">
+                      <DrawerDescription className="text-2xl">
+                        Total winnings for this round:
+                      </DrawerDescription>
+                      <DrawerTitle className="text-3xl">
+                        {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
+                      </DrawerTitle>
+                    </div>
+                  </>
+                ) : fetchingPlayerAndTileData.STATUS == "Win" &&
+                  lastMatch == false ? (
+                  <>
+                    <div className="flex items-end gap-5 border-b border-gray-600/50">
+                      <DrawerDescription className="text-2xl">
+                        Congratulations! You won your current bet:
+                      </DrawerDescription>
+                      <DrawerTitle className="text-3xl">
+                        {fetchingPlayerAndTileData.LASTBETAMOUNT}
+                      </DrawerTitle>
+                    </div>
+                    <div className="flex items-end gap-5 border-b border-gray-600/50">
+                      <DrawerDescription className="text-2xl">
+                        Total winnings for this round:
+                      </DrawerDescription>
+                      <DrawerTitle className="text-3xl">
+                        {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
+                      </DrawerTitle>
+                    </div>
+                  </>
+                ) : fetchingPlayerAndTileData.STATUS == "Win" &&
+                  lastMatch == true ? (
+                  <>
+                    <div className="flex items-end gap-5 border-b border-gray-600/50">
+                      <DrawerDescription className="text-2xl">
+                        In the last match, you won your bet:
+                      </DrawerDescription>
+                      <DrawerTitle className="text-3xl">
+                        {fetchingPlayerAndTileData.LASTBETAMOUNT}
+                      </DrawerTitle>
+                    </div>
+                    <div className="flex items-end gap-5 border-b border-gray-600/50">
+                      <DrawerDescription className="text-2xl">
+                        Total winnings from the last match:
                       </DrawerDescription>
                       <DrawerTitle className="text-3xl">
                         {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
