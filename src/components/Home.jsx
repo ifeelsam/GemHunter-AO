@@ -51,7 +51,46 @@ export default function Home() {
   });
   const [startGameButtonDisable, setStartGameButtonDisable] = useState(false);
   const [currentProcessID, setCurrentProcessID] = useState("");
-  const [fetchingPlayerAndTileData, setFetchingPlayerAndTileData] = useState(null);
+  const [fetchingPlayerAndTileData, setFetchingPlayerAndTileData] = useState({
+    WINNINGAMOUNT: 1,
+    BET: 0,
+    LASTBETAMOUNT: 1,
+    LASTWINNINGAMOUNT: 1,
+    TILE: [
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Bomb" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+      { open: false, value: "Diamond" },
+    ],
+    STATUS: "safe",
+    ID: 2,
+    ADDRESS: "yWEDs-sho-5Ka7ql_Ov71GNFdHqLspekxfhAo1bcqtU",
+    INCREASER: 0,
+    HASGAMESTARTED: 0,
+    BALANCE: 100,
+    HASSETBOMBS: 0,
+  });
   const [hasGameStarted, setHasGameStarted] = useState(false);
   const [loadingScreenMessage, setLoadingScreenMessage] = useState(true);
   const [lastMatch, setLastMatch] = useState(false);
@@ -79,7 +118,7 @@ export default function Home() {
             tags: [{ name: "Action", value: "ReturnData" }],
           });
 
-        //  // console.log("Fetching Data: " + messageId2);
+          //  // console.log("Fetching Data: " + messageId2);
 
           let res1 = await result({
             message: messageId2,
@@ -168,7 +207,7 @@ export default function Home() {
         tags: [{ name: "Action", value: "ReturnData" }],
       });
 
-     // // console.log("open tile: " + messageId2);
+      // // console.log("open tile: " + messageId2);
 
       let res1 = await result({
         message: messageId2,
@@ -241,7 +280,7 @@ export default function Home() {
         tags: [{ name: "Action", value: "ReturnData" }],
       });
 
-   //   // console.log("End Game: " + messageId2);
+      //   // console.log("End Game: " + messageId2);
 
       let res1 = await result({
         message: messageId2,
@@ -253,7 +292,7 @@ export default function Home() {
       // const data2 = JSON.parse(data);
       // setFetchingPlayerAndTileData(data2);
       setFetchingPlayerAndTileData(data);
-     // // console.log("Tiles: ", data);
+      // // console.log("Tiles: ", data);
       // if (data2.playerStats == "End") {
       //   setTileLoading({ load: true, indexOfTile: null });
       //   handleButtonClick();
@@ -286,7 +325,7 @@ export default function Home() {
   const handleInput = (event) => {
     const name = event.target.name;
     const value = event.target.value;
-   // // console.log(name, value);
+    // // console.log(name, value);
     setPlayerEnterGameDetails({ ...playerEnterGameDetails, [name]: value });
   };
 
@@ -404,19 +443,19 @@ export default function Home() {
         tags: [{ name: "Action", value: "ReturnData" }],
       });
 
-     // // console.log("Start Game: " + messageId2);
+      // // console.log("Start Game: " + messageId2);
 
       let res1 = await result({
         message: messageId2,
         process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
       });
-   //   // console.log("Tiles: ", JSON.stringify(res1));
+      //   // console.log("Tiles: ", JSON.stringify(res1));
       const data = JSON.parse(res1.Messages[0].Data);
       // const data = stripAnsiCodes(res1.Output.data.output);
       // const data2 = JSON.parse(data);
       // setFetchingPlayerAndTileData(data2);
       setFetchingPlayerAndTileData(data);
-   //   // console.log("Tiles: ", data);
+      //   // console.log("Tiles: ", data);
       setLoading1(false);
       setStartGameButtonDisable(true);
       setHasGameStarted(true);
