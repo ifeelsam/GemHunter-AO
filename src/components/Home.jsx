@@ -314,6 +314,11 @@ export default function Home() {
   }
 
   const handleButtonClick = () => {
+    // if (fetchingPlayerAndTileData.STATUS == "Safe") {
+    //   setLastMatch(false);
+    // } else {
+    //   setLastMatch(true);
+    // }
     fileInputRef.current.click();
   };
 
