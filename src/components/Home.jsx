@@ -613,229 +613,233 @@ export default function Home() {
               <></>
             )}
           </form>
-          <Drawer className="">
-            <DrawerTrigger
-              ref={fileInputRef}
-              className="absolute bottom-0 w-full font-medium mt-4 bg-[#252525] hover:bg-[#343434]transition-colors flex justify-center items-center"
-            >
-              View Game Status
-            </DrawerTrigger>
-            <DrawerContent className="bg-[#121212] text-[#FFFFFF]">
-              <DrawerHeader className="flex flex-col  justify-center items-center w-full h-full gap-3">
-                {lastMatch ? (
-                  <DrawerTitle className="font-semibold border-b border-gray-600/50">
-                    Last Match
-                  </DrawerTitle>
-                ) : (
-                  <></>
-                )}
-                <DrawerTitle className="text-5xl font-semibold border-b border-gray-600/50 flex items-end gap-2">
-                  {fetchingPlayerAndTileData.STATUS === "Safe"
-                    ? "You're Safe! Game Ongoing..."
-                    : fetchingPlayerAndTileData.STATUS === "Doom"
-                    ? "Boom! You Lost!"
-                    : fetchingPlayerAndTileData.STATUS === "Win"
-                    ? "Congratulations! You Won!"
-                    : "Game Over"}
-                  {fetchingPlayerAndTileData.STATUS == "Safe" ? (
-                    <IoRocketSharp size={60} />
-                  ) : fetchingPlayerAndTileData.STATUS == "Doom" ? (
-                    <GiRollingBomb size={70} />
-                  ) : fetchingPlayerAndTileData.STATUS == "Win" ? (
-                    <GiGlassCelebration size={90} />
+          {connected ? (
+            <Drawer className="">
+              <DrawerTrigger
+                ref={fileInputRef}
+                className="absolute bottom-0 w-full font-medium mt-4 bg-[#252525] hover:bg-[#343434]transition-colors flex justify-center items-center"
+              >
+                View Game Status
+              </DrawerTrigger>
+              <DrawerContent className="bg-[#121212] text-[#FFFFFF]">
+                <DrawerHeader className="flex flex-col  justify-center items-center w-full h-full gap-3">
+                  {lastMatch ? (
+                    <DrawerTitle className="font-semibold border-b border-gray-600/50">
+                      Last Match
+                    </DrawerTitle>
                   ) : (
-                    <PiThumbsUpFill size={65} />
+                    <></>
                   )}
-                </DrawerTitle>
-                {fetchingPlayerAndTileData.STATUS == "Safe" ? (
-                  <DrawerDescription className="text-2xl text-green-500">
-                    {fetchingPlayerAndTileData.INCREASER}x
-                  </DrawerDescription>
-                ) : fetchingPlayerAndTileData.STATUS == "Win" ? (
-                  <DrawerDescription className="text-2xl text-green-500">
-                    {fetchingPlayerAndTileData.INCREASER}x
-                  </DrawerDescription>
-                ) : (
-                  <></>
-                )}
-
-                {fetchingPlayerAndTileData.STATUS == "Doom" &&
-                lastMatch == true ? (
-                  <>
-                    <div className="flex items-end gap-5 border-b border-gray-600/50">
-                      <DrawerDescription className="text-2xl">
-                        In the last match, you lost your bet:{" "}
-                      </DrawerDescription>
-                      <DrawerTitle className="text-3xl">
-                        {fetchingPlayerAndTileData.LASTBETAMOUNT}
-                      </DrawerTitle>
-                    </div>
-                    <div className="flex items-end gap-5 border-b border-gray-600/50">
-                      <DrawerDescription className="text-2xl">
-                        Total amount you missed winning last round:{" "}
-                      </DrawerDescription>
-                      <DrawerTitle className="text-3xl">
-                        {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
-                      </DrawerTitle>
-                    </div>
-                  </>
-                ) : fetchingPlayerAndTileData.STATUS == "Doom" &&
-                  lastMatch == false ? (
-                  <>
-                    <div className="flex items-end gap-5 border-b border-gray-600/50">
-                      <DrawerDescription className="text-2xl">
-                        You lost your current bet:{" "}
-                      </DrawerDescription>
-                      <DrawerTitle className="text-3xl">
-                        {fetchingPlayerAndTileData.LASTBETAMOUNT}
-                      </DrawerTitle>
-                    </div>
-                    <div className="flex items-end gap-5 border-b border-gray-600/50">
-                      <DrawerDescription className="text-2xl">
-                        Total potential winnings lost this round:
-                      </DrawerDescription>
-                      <DrawerTitle className="text-3xl">
-                        {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
-                      </DrawerTitle>
-                    </div>
-                  </>
-                ) : fetchingPlayerAndTileData.STATUS == "End" &&
-                  lastMatch == true ? (
-                  <>
-                    <div className="flex items-end gap-5 border-b border-gray-600/50">
-                      <DrawerDescription className="text-2xl">
-                        Your bet from the last match was:
-                      </DrawerDescription>
-                      <DrawerTitle className="text-3xl">
-                        {fetchingPlayerAndTileData.LASTBETAMOUNT}
-                      </DrawerTitle>
-                    </div>
-                    <div className="flex items-end gap-5 border-b border-gray-600/50">
-                      <DrawerDescription className="text-2xl">
-                        Total winnings from the last match:
-                      </DrawerDescription>
-                      <DrawerTitle className="text-3xl">
-                        {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
-                      </DrawerTitle>
-                    </div>
-                  </>
-                ) : fetchingPlayerAndTileData.STATUS == "End" &&
-                  lastMatch == false ? (
-                  <>
-                    <div className="flex items-end gap-5 border-b border-gray-600/50">
-                      <DrawerDescription className="text-2xl">
-                        Your current bet:
-                      </DrawerDescription>
-                      <DrawerTitle className="text-3xl">
-                        {fetchingPlayerAndTileData.LASTBETAMOUNT}
-                      </DrawerTitle>
-                    </div>
-                    <div className="flex items-end gap-5 border-b border-gray-600/50">
-                      <DrawerDescription className="text-2xl">
-                        Total winnings for this round:
-                      </DrawerDescription>
-                      <DrawerTitle className="text-3xl">
-                        {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
-                      </DrawerTitle>
-                    </div>
-                  </>
-                ) : fetchingPlayerAndTileData.STATUS == "End" &&
-                  lastMatch == false ? (
-                  <>
-                    <div className="flex items-end gap-5 border-b border-gray-600/50">
-                      <DrawerDescription className="text-2xl">
-                        Your current bet:
-                      </DrawerDescription>
-                      <DrawerTitle className="text-3xl">
-                        {fetchingPlayerAndTileData.LASTBETAMOUNT}
-                      </DrawerTitle>
-                    </div>
-                    <div className="flex items-end gap-5 border-b border-gray-600/50">
-                      <DrawerDescription className="text-2xl">
-                        Total winnings for this round:
-                      </DrawerDescription>
-                      <DrawerTitle className="text-3xl">
-                        {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
-                      </DrawerTitle>
-                    </div>
-                  </>
-                ) : fetchingPlayerAndTileData.STATUS == "Win" &&
-                  lastMatch == false ? (
-                  <>
-                    <div className="flex items-end gap-5 border-b border-gray-600/50">
-                      <DrawerDescription className="text-2xl">
-                        Congratulations! You won your current bet:
-                      </DrawerDescription>
-                      <DrawerTitle className="text-3xl">
-                        {fetchingPlayerAndTileData.LASTBETAMOUNT}
-                      </DrawerTitle>
-                    </div>
-                    <div className="flex items-end gap-5 border-b border-gray-600/50">
-                      <DrawerDescription className="text-2xl">
-                        Total winnings for this round:
-                      </DrawerDescription>
-                      <DrawerTitle className="text-3xl">
-                        {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
-                      </DrawerTitle>
-                    </div>
-                  </>
-                ) : fetchingPlayerAndTileData.STATUS == "Win" &&
-                  lastMatch == true ? (
-                  <>
-                    <div className="flex items-end gap-5 border-b border-gray-600/50">
-                      <DrawerDescription className="text-2xl">
-                        In the last match, you won your bet:
-                      </DrawerDescription>
-                      <DrawerTitle className="text-3xl">
-                        {fetchingPlayerAndTileData.LASTBETAMOUNT}
-                      </DrawerTitle>
-                    </div>
-                    <div className="flex items-end gap-5 border-b border-gray-600/50">
-                      <DrawerDescription className="text-2xl">
-                        Total winnings from the last match:
-                      </DrawerDescription>
-                      <DrawerTitle className="text-3xl">
-                        {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
-                      </DrawerTitle>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex items-end gap-5 border-b border-gray-600/50">
-                      <DrawerDescription className="text-2xl">
-                        Current bet placed:
-                      </DrawerDescription>
-                      <DrawerTitle className="text-3xl">
-                        {fetchingPlayerAndTileData.BET}
-                      </DrawerTitle>
-                    </div>
-                    <div className="flex items-end gap-5 border-b border-gray-600/50">
-                      <DrawerDescription className="text-2xl">
-                        Total winnings so far:
-                      </DrawerDescription>
-                      <DrawerTitle className="text-3xl">
-                        {fetchingPlayerAndTileData.WINNINGAMOUNT}
-                      </DrawerTitle>
-                    </div>
-                  </>
-                )}
-                <div className="flex items-end gap-5 border-b border-gray-600/50">
-                  <DrawerDescription className="text-2xl">
-                    Total Balance:
-                  </DrawerDescription>
-                  <DrawerTitle className="text-3xl">
-                    {fetchingPlayerAndTileData.BALANCE}
+                  <DrawerTitle className="text-5xl font-semibold border-b border-gray-600/50 flex items-end gap-2">
+                    {fetchingPlayerAndTileData.STATUS === "Safe"
+                      ? "You're Safe! Game Ongoing..."
+                      : fetchingPlayerAndTileData.STATUS === "Doom"
+                      ? "Boom! You Lost!"
+                      : fetchingPlayerAndTileData.STATUS === "Win"
+                      ? "Congratulations! You Won!"
+                      : "Game Over"}
+                    {fetchingPlayerAndTileData.STATUS == "Safe" ? (
+                      <IoRocketSharp size={60} />
+                    ) : fetchingPlayerAndTileData.STATUS == "Doom" ? (
+                      <GiRollingBomb size={70} />
+                    ) : fetchingPlayerAndTileData.STATUS == "Win" ? (
+                      <GiGlassCelebration size={90} />
+                    ) : (
+                      <PiThumbsUpFill size={65} />
+                    )}
                   </DrawerTitle>
-                </div>
-              </DrawerHeader>
-              <DrawerFooter>
-                {/* <Button>Submit</Button> */}
-                <DrawerClose>
-                  <Button variant="outline text-black">Close</Button>
-                </DrawerClose>
-              </DrawerFooter>
-            </DrawerContent>
-          </Drawer>
+                  {fetchingPlayerAndTileData.STATUS == "Safe" ? (
+                    <DrawerDescription className="text-2xl text-green-500">
+                      {fetchingPlayerAndTileData.INCREASER}x
+                    </DrawerDescription>
+                  ) : fetchingPlayerAndTileData.STATUS == "Win" ? (
+                    <DrawerDescription className="text-2xl text-green-500">
+                      {fetchingPlayerAndTileData.INCREASER}x
+                    </DrawerDescription>
+                  ) : (
+                    <></>
+                  )}
+
+                  {fetchingPlayerAndTileData.STATUS == "Doom" &&
+                  lastMatch == true ? (
+                    <>
+                      <div className="flex items-end gap-5 border-b border-gray-600/50">
+                        <DrawerDescription className="text-2xl">
+                          In the last match, you lost your bet:{" "}
+                        </DrawerDescription>
+                        <DrawerTitle className="text-3xl">
+                          {fetchingPlayerAndTileData.LASTBETAMOUNT}
+                        </DrawerTitle>
+                      </div>
+                      <div className="flex items-end gap-5 border-b border-gray-600/50">
+                        <DrawerDescription className="text-2xl">
+                          Total amount you missed winning last round:{" "}
+                        </DrawerDescription>
+                        <DrawerTitle className="text-3xl">
+                          {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
+                        </DrawerTitle>
+                      </div>
+                    </>
+                  ) : fetchingPlayerAndTileData.STATUS == "Doom" &&
+                    lastMatch == false ? (
+                    <>
+                      <div className="flex items-end gap-5 border-b border-gray-600/50">
+                        <DrawerDescription className="text-2xl">
+                          You lost your current bet:{" "}
+                        </DrawerDescription>
+                        <DrawerTitle className="text-3xl">
+                          {fetchingPlayerAndTileData.LASTBETAMOUNT}
+                        </DrawerTitle>
+                      </div>
+                      <div className="flex items-end gap-5 border-b border-gray-600/50">
+                        <DrawerDescription className="text-2xl">
+                          Total potential winnings lost this round:
+                        </DrawerDescription>
+                        <DrawerTitle className="text-3xl">
+                          {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
+                        </DrawerTitle>
+                      </div>
+                    </>
+                  ) : fetchingPlayerAndTileData.STATUS == "End" &&
+                    lastMatch == true ? (
+                    <>
+                      <div className="flex items-end gap-5 border-b border-gray-600/50">
+                        <DrawerDescription className="text-2xl">
+                          Your bet from the last match was:
+                        </DrawerDescription>
+                        <DrawerTitle className="text-3xl">
+                          {fetchingPlayerAndTileData.LASTBETAMOUNT}
+                        </DrawerTitle>
+                      </div>
+                      <div className="flex items-end gap-5 border-b border-gray-600/50">
+                        <DrawerDescription className="text-2xl">
+                          Total winnings from the last match:
+                        </DrawerDescription>
+                        <DrawerTitle className="text-3xl">
+                          {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
+                        </DrawerTitle>
+                      </div>
+                    </>
+                  ) : fetchingPlayerAndTileData.STATUS == "End" &&
+                    lastMatch == false ? (
+                    <>
+                      <div className="flex items-end gap-5 border-b border-gray-600/50">
+                        <DrawerDescription className="text-2xl">
+                          Your current bet:
+                        </DrawerDescription>
+                        <DrawerTitle className="text-3xl">
+                          {fetchingPlayerAndTileData.LASTBETAMOUNT}
+                        </DrawerTitle>
+                      </div>
+                      <div className="flex items-end gap-5 border-b border-gray-600/50">
+                        <DrawerDescription className="text-2xl">
+                          Total winnings for this round:
+                        </DrawerDescription>
+                        <DrawerTitle className="text-3xl">
+                          {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
+                        </DrawerTitle>
+                      </div>
+                    </>
+                  ) : fetchingPlayerAndTileData.STATUS == "End" &&
+                    lastMatch == false ? (
+                    <>
+                      <div className="flex items-end gap-5 border-b border-gray-600/50">
+                        <DrawerDescription className="text-2xl">
+                          Your current bet:
+                        </DrawerDescription>
+                        <DrawerTitle className="text-3xl">
+                          {fetchingPlayerAndTileData.LASTBETAMOUNT}
+                        </DrawerTitle>
+                      </div>
+                      <div className="flex items-end gap-5 border-b border-gray-600/50">
+                        <DrawerDescription className="text-2xl">
+                          Total winnings for this round:
+                        </DrawerDescription>
+                        <DrawerTitle className="text-3xl">
+                          {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
+                        </DrawerTitle>
+                      </div>
+                    </>
+                  ) : fetchingPlayerAndTileData.STATUS == "Win" &&
+                    lastMatch == false ? (
+                    <>
+                      <div className="flex items-end gap-5 border-b border-gray-600/50">
+                        <DrawerDescription className="text-2xl">
+                          Congratulations! You won your current bet:
+                        </DrawerDescription>
+                        <DrawerTitle className="text-3xl">
+                          {fetchingPlayerAndTileData.LASTBETAMOUNT}
+                        </DrawerTitle>
+                      </div>
+                      <div className="flex items-end gap-5 border-b border-gray-600/50">
+                        <DrawerDescription className="text-2xl">
+                          Total winnings for this round:
+                        </DrawerDescription>
+                        <DrawerTitle className="text-3xl">
+                          {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
+                        </DrawerTitle>
+                      </div>
+                    </>
+                  ) : fetchingPlayerAndTileData.STATUS == "Win" &&
+                    lastMatch == true ? (
+                    <>
+                      <div className="flex items-end gap-5 border-b border-gray-600/50">
+                        <DrawerDescription className="text-2xl">
+                          In the last match, you won your bet:
+                        </DrawerDescription>
+                        <DrawerTitle className="text-3xl">
+                          {fetchingPlayerAndTileData.LASTBETAMOUNT}
+                        </DrawerTitle>
+                      </div>
+                      <div className="flex items-end gap-5 border-b border-gray-600/50">
+                        <DrawerDescription className="text-2xl">
+                          Total winnings from the last match:
+                        </DrawerDescription>
+                        <DrawerTitle className="text-3xl">
+                          {fetchingPlayerAndTileData.LASTWINNINGAMOUNT}
+                        </DrawerTitle>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-end gap-5 border-b border-gray-600/50">
+                        <DrawerDescription className="text-2xl">
+                          Current bet placed:
+                        </DrawerDescription>
+                        <DrawerTitle className="text-3xl">
+                          {fetchingPlayerAndTileData.BET}
+                        </DrawerTitle>
+                      </div>
+                      <div className="flex items-end gap-5 border-b border-gray-600/50">
+                        <DrawerDescription className="text-2xl">
+                          Total winnings so far:
+                        </DrawerDescription>
+                        <DrawerTitle className="text-3xl">
+                          {fetchingPlayerAndTileData.WINNINGAMOUNT}
+                        </DrawerTitle>
+                      </div>
+                    </>
+                  )}
+                  <div className="flex items-end gap-5 border-b border-gray-600/50">
+                    <DrawerDescription className="text-2xl">
+                      Total Balance:
+                    </DrawerDescription>
+                    <DrawerTitle className="text-3xl">
+                      {fetchingPlayerAndTileData.BALANCE}
+                    </DrawerTitle>
+                  </div>
+                </DrawerHeader>
+                <DrawerFooter>
+                  {/* <Button>Submit</Button> */}
+                  <DrawerClose>
+                    <Button variant="outline text-black">Close</Button>
+                  </DrawerClose>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
+          ) : (
+            <></>
+          )}
         </div>
         <div className="w-[70%] h-full flex items-center justify-center p-20 border-l border-gray-600/50">
           {/* {Array.from({ length: 25 }).map((_, index) => (
