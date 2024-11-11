@@ -108,37 +108,37 @@ export default function Home() {
   const { toast } = useToast();
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // useEffect(() => {
-  //   if (connected) {
-  //     (async () => {
-  //       loadScreenButton();
-  //       try {
-  //         const messageId2 = await message({
-  //           process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
-  //           signer: createDataItemSigner(window.arweaveWallet),
-  //           tags: [{ name: "Action", value: "ReturnData" }],
-  //         });
+  useEffect(() => {
+    if (connected) {
+      (async () => {
+        loadScreenButton();
+        try {
+          const messageId2 = await message({
+            process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
+            signer: createDataItemSigner(window.arweaveWallet),
+            tags: [{ name: "Action", value: "ReturnData" }],
+          });
 
-  //         //  // console.log("Fetching Data: " + messageId2);
+          //  // console.log("Fetching Data: " + messageId2);
 
-  //         let res1 = await result({
-  //           message: messageId2,
-  //           process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
-  //         });
-  //         const data = JSON.parse(res1.Messages[0].Data);
-  //         setFetchingPlayerAndTileData(data);
-  //         if (data.STATUS == "Safe") {
-  //           setHasGameStarted(true);
-  //           setStartGameButtonDisable(true);
-  //           setLastMatch(false);
-  //         }
-  //         setLoadingScreenMessage(false);
-  //       } catch (error) {
-  //         setLoadingScreenMessage(false);
-  //       }
-  //     })();
-  //   }
-  // }, [connected]);
+          let res1 = await result({
+            message: messageId2,
+            process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
+          });
+          const data = JSON.parse(res1.Messages[0].Data);
+          setFetchingPlayerAndTileData(data);
+          if (data.STATUS == "Safe") {
+            setHasGameStarted(true);
+            setStartGameButtonDisable(true);
+            setLastMatch(false);
+          }
+          setLoadingScreenMessage(false);
+        } catch (error) {
+          setLoadingScreenMessage(false);
+        }
+      })();
+    }
+  }, [connected]);
   // // console.log(JSON.stringify(fetchingPlayerAndTileData));
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
