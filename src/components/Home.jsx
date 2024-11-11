@@ -484,8 +484,10 @@ export default function Home() {
       // setFetchingPlayerAndTileData(data2);
       setFetchingPlayerAndTileData(data);
       //   // console.log("Tiles: ", data);
+      setTileLoading({ load: false, indexOfTile: null });
       setLoading1(false);
       setStartGameButtonDisable(true);
+      
       setHasGameStarted(true);
       console.log("Game Start");
     } catch (error) {
