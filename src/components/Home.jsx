@@ -95,6 +95,7 @@ export default function Home() {
   const [hasGameStarted, setHasGameStarted] = useState(false);
   const [loadingScreenMessage, setLoadingScreenMessage] = useState(true);
   const [lastMatch, setLastMatch] = useState(false);
+  const [hasMatchEnded, setHasMatchEnded] = useState(false);
   const fileInputRef = useRef(null);
   const loadingScreen = useRef(null);
 
@@ -224,10 +225,14 @@ export default function Home() {
         setTileLoading({ load: true, indexOfTile: null });
         handleButtonClick();
         setLastMatch(false);
+        setHasMatchEnded(true);
+        setStartGameButtonDisable(false);
       } else if (data.STATUS == "Win") {
         setTileLoading({ load: true, indexOfTile: null });
         handleButtonClick();
         setLastMatch(false);
+        setHasMatchEnded(true);
+        setStartGameButtonDisable(false);
       } else {
         setTileLoading({ load: false, indexOfTile: null });
       }
@@ -306,6 +311,8 @@ export default function Home() {
         setTileLoading({ load: true, indexOfTile: null });
         handleButtonClick();
         setLastMatch(false);
+        setHasMatchEnded(true);
+        setStartGameButtonDisable(false);
       }
       setEndGameloading(false);
     } catch (error) {
@@ -320,6 +327,7 @@ export default function Home() {
     //   setLastMatch(true);
     // }
     setLastMatch(false);
+    console.log("playy....");
     fileInputRef.current.click();
   };
 
@@ -619,7 +627,7 @@ export default function Home() {
                 "Start Game"
               )}
             </button>
-            {loading1 ? (
+            {loading1 && hasMatchEnded == false ? (
               <p className="text-sm text-gray-400 mt-2">
                 If the game doesn't start within 15-20 seconds, please do a hard
                 refresh (Ctrl + Shift + R) 5-6 times and try again.
