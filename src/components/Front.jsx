@@ -1,5 +1,5 @@
 import { ConnectButton, useConnection} from "@arweave-wallet-kit/react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Footer from "./Footer";
 import gemhunterLogo from "../assets/gemhunter-logo.svg";
 
@@ -13,9 +13,9 @@ export default function Front() {
         <div className="flex gap-2 items-center ">
         <img src={gemhunterLogo}/>
         <h1 className="text-4xl font-semibold text-[#FFFFFF] border-b border-gray-600/50 ">Welcome To GemHunter-AO</h1>
-     
+
         </div>
-      
+
       {connected ? navigate("/game") : <ConnectButton className="w-56 " />}
       </div>
 

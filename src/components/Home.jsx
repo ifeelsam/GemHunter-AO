@@ -1,6 +1,5 @@
 import {
   createDataItemSigner,
-  spawn,
   message,
   result,
 } from "@permaweb/aoconnect";
@@ -51,7 +50,6 @@ export default function Home() {
     indexOfTile: null,
   });
   const [startGameButtonDisable, setStartGameButtonDisable] = useState(false);
-  const [currentProcessID, setCurrentProcessID] = useState("");
   const [fetchingPlayerAndTileData, setFetchingPlayerAndTileData] = useState({
     WINNINGAMOUNT: 0,
     BET: 0,
@@ -99,11 +97,11 @@ export default function Home() {
   const fileInputRef = useRef(null);
   const loadingScreen = useRef(null);
 
-  const stripAnsiCodes = (str) =>
-    str.replace(
-      /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
-      ""
-    );
+  // const stripAnsiCodes = (str) =>
+  //   str.replace(
+  //     /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+  //     ""
+  //   );
 
   const { connected } = useConnection();
   const { toast } = useToast();
@@ -135,6 +133,7 @@ export default function Home() {
           }
           setLoadingScreenMessage(false);
         } catch (error) {
+          console.log(error)
           setLoadingScreenMessage(false);
         }
       })();
@@ -194,14 +193,14 @@ export default function Home() {
       // `,
       //     });
 
-      const messageId = await message({
-        process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
-        signer: createDataItemSigner(window.arweaveWallet),
-        tags: [
-          { name: "Action", value: "OpenTile" },
-          { name: "tileNumber", value: `${num}` },
-        ],
-      });
+      // const messageId = await message({
+      //   process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
+      //   signer: createDataItemSigner(window.arweaveWallet),
+      //   tags: [
+      //     { name: "Action", value: "OpenTile" },
+      //     { name: "tileNumber", value: `${num}` },
+      //   ],
+      // });
 
       const messageId2 = await message({
         process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
@@ -262,10 +261,10 @@ export default function Home() {
         return;
       }
 
-      const messageId = await message({
-        process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
-        signer: createDataItemSigner(window.arweaveWallet),
-        tags: [{ name: "Action", value: "EndGame" }],
+      // const messageId = await message({
+      //   process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
+      //   signer: createDataItemSigner(window.arweaveWallet),
+      //   tags: [{ name: "Action", value: "EndGame" }],
         //       data: `
 
         // gameStatus.hasPlayerEndTheGame = true
@@ -282,7 +281,7 @@ export default function Home() {
         // return data
 
         // `,
-      });
+      // });
 
       const messageId2 = await message({
         process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
@@ -455,15 +454,15 @@ export default function Home() {
       // `,
       // });
 
-      const messageId = await message({
-        process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
-        signer: createDataItemSigner(window.arweaveWallet),
-        tags: [
-          { name: "Action", value: "StartGame" },
-          { name: "numberOfBombs", value: `${playerEnterGameDetails.bombs}` },
-          { name: "betAmount", value: `${playerEnterGameDetails.betAmount}` },
-        ],
-      });
+      // const messageId = await message({
+      //   process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
+      //   signer: createDataItemSigner(window.arweaveWallet),
+      //   tags: [
+      //     { name: "Action", value: "StartGame" },
+      //     { name: "numberOfBombs", value: `${playerEnterGameDetails.bombs}` },
+      //     { name: "betAmount", value: `${playerEnterGameDetails.betAmount}` },
+      //   ],
+      // });
 
       const messageId2 = await message({
         process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
@@ -487,7 +486,7 @@ export default function Home() {
       setTileLoading({ load: false, indexOfTile: null });
       setLoading1(false);
       setStartGameButtonDisable(true);
-      
+
       setHasGameStarted(true);
       console.log("Game Start");
     } catch (error) {
@@ -555,7 +554,7 @@ export default function Home() {
                   Current Bet You Placed
                 </h1>
                 <h1
-                  className={`bg-[#252525] h-10 px-2 py-4 flex items-center 
+                  className={`bg-[#252525] h-10 px-2 py-4 flex items-center
                    text-[#FFFFFF]  text-lg rounded-sm`}
                 >
                   {fetchingPlayerAndTileData.BET}
@@ -564,7 +563,7 @@ export default function Home() {
               <div className="flex flex-col">
                 <h1 className="text-lg font-semibold"> Total Balance</h1>
                 <h1
-                  className={`bg-[#252525] h-10 px-2 py-4 flex items-center 
+                  className={`bg-[#252525] h-10 px-2 py-4 flex items-center
                   text-[#FFFFFF]  text-lg rounded-sm`}
                 >
                   {fetchingPlayerAndTileData.BALANCE}
@@ -623,7 +622,15 @@ export default function Home() {
                   : "bg-[#252525] hover:bg-[#343434]"
               } transition-colors flex justify-center items-center`}
             >
-              {loading1 ? (
+              {loading1 ?      // const messageId = await message({
+               //   process: "kyyYDxfEPeJPJS03sm6IKu8IS09lf1hPqVxIEeo-Mac",
+               //   signer: createDataItemSigner(window.arweaveWallet),
+               //   tags: [
+               //     { name: "Action", value: "StartGame" },
+               //     { name: "numberOfBombs", value: `${playerEnterGameDetails.bombs}` },
+               //     { name: "betAmount", value: `${playerEnterGameDetails.betAmount}` },
+               //   ],
+           (
                 <FiLoader size={26} className="animate-spin" />
               ) : (
                 "Start Game"
@@ -631,7 +638,7 @@ export default function Home() {
             </button>
             {loading1 && hasMatchEnded == false ? (
               <p className="text-sm text-gray-400 mt-2">
-                If the game doesn't start within 15-20 seconds, please do a hard
+                If the game doesnt start within 15-20 seconds, please do a hard
                 refresh (Ctrl + Shift + R) 5-6 times and try again.
               </p>
             ) : (
@@ -914,8 +921,8 @@ export default function Home() {
                 })}
               </div>
               <button
-                className="w-40 h-10 font-medium rounded-lg mt-0 
-              
+                className="w-40 h-10 font-medium rounded-lg mt-0
+
                 bg-[#252525] hover:bg-[#343434]
                transition-colors flex justify-center items-center"
                 onClick={endGame}

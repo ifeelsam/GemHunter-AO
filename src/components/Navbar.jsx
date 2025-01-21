@@ -1,4 +1,3 @@
-import { NavLink } from "react-router-dom";
 import { ConnectButton } from "@arweave-wallet-kit/react";
 
 export default function Navbar() {

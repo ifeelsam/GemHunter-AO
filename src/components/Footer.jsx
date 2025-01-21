@@ -1,8 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
-export default function Footer({className}) {
+export default function Footer() {
   return (
-    <div className={`w-full py-[2%] border-t border-gray-600/50 flex items-center justify-center gap-10 ${className}`}>
+    <div className={`w-full py-[2%] border-t border-gray-600/50 flex items-center justify-center gap-10`}>
       <a
         href="https://github.com/AAshu1412/GemHunter-AO"
         target="_blank"
@@ -18,11 +18,9 @@ export default function Footer({className}) {
         </Avatar>
         <h1 className="text-sm">AAshu1412</h1>
       </a>
-
-<div>
-  <h1>ashutoshsanjeevmittal@gmail.com</h1>
-</div>
-    
+      <div>
+        <h1>ashutoshsanjeevmittal@gmail.com</h1>
+      </div>
     </div>
   );
 }
